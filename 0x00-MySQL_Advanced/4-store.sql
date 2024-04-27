@@ -1,5 +1,6 @@
 --
 --
+DELIMITER //
 CREATE TRIGGER IF NOT EXISTS update_item_quantity AFTER INSERT ON orders
 FOR EACH ROW
 BEGIN
@@ -7,3 +8,5 @@ BEGIN
     SET quantity = quantity - NEW.number
     WHERE name = NEW.item_name;
 END;
+//
+DELIMITER ;
