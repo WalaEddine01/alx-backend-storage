@@ -1,5 +1,6 @@
---
---
+-- This script creates a stored procedure that adds a bonus to a user for a project.
+-- The procedure first checks if the project exists in the projects table.
+-- If it does not exist, it creates a new project and retrieves its id.
 DELIMITER //
 CREATE PROCEDURE IF NOT EXISTS addBonus (user_id INT, project_name VARCHAR(255), score INT)
 BEGIN
