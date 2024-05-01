@@ -5,7 +5,27 @@ This Module contains the Cache class to store data in redis
 import uuid
 import redis
 from functools import wraps
-from typing import Union, Optional, Callable
+from typing import Union, Optional, Callable, Any
+
+
+def call_history(method: Callable) -> Callable:
+    """
+    Decorator to store the inputs and outputs of a method in redis
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """
+        Wrapper function to store the inputs and outputs
+        """
+        inputs_key = f"{method.__qualname__}:inputs"
+        outputs_key = f"{method.__qualname__}:outputs"
+
+        self._redis.rpush(inputs_key, str(args))
+        result = method(self, *args, **kwargs)
+        self._redis.rpush(outputs_key, str(result))
+
+        return result
+    return wrapper
 
 
 def count_calls(method: Callable) -> Callable:
