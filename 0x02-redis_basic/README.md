@@ -1,6 +1,6 @@
 <br clear="both">
 
-<h1 align="center">alx-backend-storage</h1>
+<h1 align="center">0x02-redis_basic</h1>
 
 ###
 
