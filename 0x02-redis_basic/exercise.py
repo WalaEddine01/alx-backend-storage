@@ -5,7 +5,7 @@ This Module contains the Cache class to store data in redis
 import uuid
 import redis
 from functools import wraps
-from typing import Union, Optional, Callable, Any
+from typing import Union, Optional, Callable
 
 
 def call_history(method: Callable) -> Callable:
