@@ -8,6 +8,21 @@ from functools import wraps
 from typing import Union, Optional, Callable
 
 
+def count_calls(method: Callable) -> Callable:
+    """
+    Decorator to count the number of calls to a method
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """
+        Wrapper function to count the number of calls
+        """
+        key = method.__qualname__
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
+
+
 def call_history(method: Callable) -> Callable:
     """
     Decorator to store the inputs and outputs of a method in redis
@@ -25,21 +40,6 @@ def call_history(method: Callable) -> Callable:
         self._redis.rpush(outputs_key, str(result))
 
         return result
-    return wrapper
-
-
-def count_calls(method: Callable) -> Callable:
-    """
-    Decorator to count the number of calls to a method
-    """
-    @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        """
-        Wrapper function to count the number of calls
-        """
-        key = method.__qualname__
-        self._redis.incr(key)
-        return method(self, *args, **kwargs)
     return wrapper
 
 
