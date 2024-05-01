@@ -8,6 +8,21 @@ from functools import wraps
 from typing import Union, Optional, Callable
 
 
+def replay(redis_client: redis.Redis, method: Callable) -> None:
+    """
+    Display the history of calls of a particular function
+    """
+    inputs_key = f"{method.__qualname__}:inputs"
+    outputs_key = f"{method.__qualname__}:outputs"
+
+    inputs = redis_client.lrange(inputs_key, 0, -1)
+    outputs = redis_client.lrange(outputs_key, 0, -1)
+
+    print(f"History of calls for function {method.__qualname__}:")
+    for input_data, output_data in zip(inputs, outputs):
+        print(f"Input: {input_data.decode()} - Output: {output_data.decode()}")
+
+
 def count_calls(method: Callable) -> Callable:
     """
     Decorator to count the number of calls to a method
