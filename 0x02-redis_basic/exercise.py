@@ -2,6 +2,7 @@
 """
 This Module contains the Cache class to store data in redis
 """
+import requests
 import uuid
 import redis
 from functools import wraps
@@ -48,6 +49,43 @@ def call_history(method: Callable) -> Callable:
         self._redis.rpush(method.__qualname__ + ":outputs", output_data)
         return output_data
     return wrapper
+
+
+def cache_page(timeout=10):
+    """
+    Decorator to cache the content of a webpage
+    """
+    def decorator(func):
+        """
+        Decorator to cache the content of a webpage
+        """
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            """
+            Wrapper function to cache the content of a webpage
+            """
+            url = args[0]
+            key = f"cache:{url}"
+            redis_client = redis.Redis()
+            cached_content = redis_client.get(key)
+            if cached_content:
+                return cached_content.decode('utf-8')
+            else:
+                content = func(*args, **kwargs)
+                redis_client.setex(key, timeout, content)
+                return content
+        return wrapper
+    return decorator
+
+
+@count_calls
+@cache_page()
+def get_page(url):
+    """
+    Get the content of a webpage
+    """
+    response = requests.get(url)
+    return response.text
 
 
 class Cache:
